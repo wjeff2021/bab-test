@@ -90,3 +90,10 @@ jobs:
           commit_message: "🔄 自动同步最新 Worker 版本：${{ env.TAG_NAME }}"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           push_options: --force
+
+      - name: Telegram 通知
+        if: always()  # 不管构建成功与否都发送，可改成 success() 或 failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage" \
+          -d chat_id=${{ secrets.TG_CHAT_ID }} \
+          -d text="✅ GitHub Actions 构建完成：${{ github.repository }} @ ${{ github.ref_name }}（状态：${{ job.status }}）"
