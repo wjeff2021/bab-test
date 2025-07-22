@@ -35,7 +35,7 @@ jobs:
         id: get_release
         run: |
           echo -e "\033[34m[获取最新 Release]\033[0m"
-          API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases"
+          API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases/latest"
           RESPONSE=$(curl -s "$API_URL")
 
           echo "$RESPONSE" | jq . > /dev/null 2>&1
@@ -44,17 +44,18 @@ jobs:
             exit 1
           fi
 
-          TAG_NAME=$(echo "$RESPONSE" | jq -r '.[0].tag_name')
-          DOWNLOAD_URL=$(echo "$RESPONSE" | jq -r '.[0].assets[] | select(.name == "worker.zip") | .browser_download_url')
+            TAG_NAME=$(echo "$RESPONSE" | jq -r '.tag_name')
+            DOWNLOAD_URL=$(echo "$RESPONSE" | jq -r '.assets[] | select(.name == "worker.zip") | .browser_download_url')
 
           if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" == "null" ]; then
             echo -e "\033[31m未找到 worker.zip，退出！\033[0m"
             exit 1
           fi
 
-          echo "最新版本号: $TAG_NAME"
-          echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+            echo "最新版本号: $TAG_NAME"
+            echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
+            echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
 
 
       - name: 判断是否需要更新
