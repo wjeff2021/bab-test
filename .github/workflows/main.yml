@@ -31,38 +31,38 @@ jobs:
           fi
           echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
 
-     - name: 获取最新 Release 信息
-       id: get_release
-       run: |
-         echo -e "\033[34m[获取最新 Release]\033[0m"
-         API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases"
-         RESPONSE=$(curl -s "$API_URL")
+      - name: 获取最新 Release 信息
+        id: get_release
+        run: |
+          echo -e "\033[34m[获取最新 Release]\033[0m"
+          API_URL="https://api.github.com/repos/bia-pain-bache/BPB-Worker-Panel/releases"
+          RESPONSE=$(curl -s "$API_URL")
 
-         echo "GitHub API 响应内容:"
-         echo "$RESPONSE"
+          echo "GitHub API 响应内容:"
+          echo "$RESPONSE"
 
-         echo "$RESPONSE" | jq . > /dev/null 2>&1
-         if [ $? -ne 0 ]; then
-           echo -e "\033[31mGitHub API 返回内容不是合法 JSON，退出。\033[0m"
-           exit 1
-         fi
+          echo "$RESPONSE" | jq . > /dev/null 2>&1
+          if [ $? -ne 0 ]; then
+            echo -e "\033[31mGitHub API 返回内容不是合法 JSON，退出。\033[0m"
+            exit 1
+          fi
 
-           TAG_NAME=$(echo "$RESPONSE" | jq -r '.[0].tag_name')
-           DOWNLOAD_URL=$(echo "$RESPONSE" | jq -r '.[0].assets[]? | select(.name == "worker.zip") | .browser_download_url')
+            TAG_NAME=$(echo "$RESPONSE" | jq -r '.[0].tag_name')
+            DOWNLOAD_URL=$(echo "$RESPONSE" | jq -r '.[0].assets[]? | select(.name == "worker.zip") | .browser_download_url')
 
-        if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" == "null" ]; then
-          echo -e "\033[31m未获取到最新版本号，退出。\033[0m"
-          exit 1
-        fi
+          if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" == "null" ]; then
+            echo -e "\033[31m未获取到最新版本号，退出。\033[0m"
+            exit 1
+          fi
 
-        if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" == "null" ]; then
-          echo -e "\033[31m未找到 worker.zip，退出。\033[0m"
-          exit 1
-        fi
+          if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" == "null" ]; then
+            echo -e "\033[31m未找到 worker.zip，退出。\033[0m"
+            exit 1
+          fi
 
-        echo "最新版本号: $TAG_NAME"
-        echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
-        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "最新版本号: $TAG_NAME"
+          echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
 
 
